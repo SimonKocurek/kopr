@@ -11,7 +11,7 @@ public class ParkingLotActor {
      * @return
      */
     private List<Double> parkingLotsUsagesInPercent(List<Integer> ids) {
-
+        return null;
     }
 
     /**
@@ -21,7 +21,7 @@ public class ParkingLotActor {
      * @return
      */
     private int parkingLotVisitorsDuringDay(Integer id, LocalDate day) {
-
+        return 0;
     }
 
 }

@@ -1,5 +1,7 @@
 package kopr.nikdy.viac.actors;
 
+import kopr.nikdy.viac.entities.ParkingTicket;
+
 import java.util.UUID;
 
 public class TicketActor {
@@ -9,8 +11,8 @@ public class TicketActor {
      * @param ticket
      * @return
      */
-    private UUID addTicket(Ticket ticket) {
-
+    private UUID addTicket(ParkingTicket ticket) {
+        return null;
     }
 
     /**
