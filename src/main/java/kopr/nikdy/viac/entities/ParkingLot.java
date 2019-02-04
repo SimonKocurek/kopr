@@ -14,6 +14,11 @@ public class ParkingLot {
      */
     private int capacity;
 
+    /**
+     * Human readable identifier of parking lot (eg. GPS, street name)
+     */
+    private String name;
+
     public Integer getId() {
         return id;
     }
@@ -30,13 +35,22 @@ public class ParkingLot {
         this.capacity = capacity;
     }
 
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         ParkingLot that = (ParkingLot) o;
         return capacity == that.capacity &&
-                Objects.equals(id, that.id);
+                Objects.equals(id, that.id) &&
+                Objects.equals(name, that.name);
     }
 
     @Override
@@ -49,6 +63,7 @@ public class ParkingLot {
         return "ParkingLot{" +
                 "id=" + id +
                 ", capacity=" + capacity +
+                ", name='" + name + '\'' +
                 '}';
     }
 
