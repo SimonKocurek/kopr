@@ -2,6 +2,7 @@ package kopr.nikdy.viac.endpoints;
 
 import akka.actor.ActorRef;
 import akka.actor.ActorSystem;
+import kopr.nikdy.viac.actions.*;
 import kopr.nikdy.viac.actors.MasterActor;
 
 import static spark.Spark.*;
@@ -12,35 +13,41 @@ public class Server {
         ActorSystem system = ActorSystem.create();
         ActorRef master = system.actorOf(MasterActor.props());
 
-        // matches "GET /hello/foo" and "GET /hello/bar"
-// request.params(":name") is 'foo' or 'bar'
-        get("/hello/:name", (request, response) -> {
-            return "Hello: " + request.params(":name");
+        post("/parkingLot", (request, response) -> {
+            master.tell(new AddParkingLotAction(request, response), ActorRef.noSender());
+
+            response.wait();
+            return response;
         });
 
-        path("/lot", () -> {
-            post("/", (request, response) -> {
+        get("/parkingLot/usage", (request, response) -> {
+            master.tell(new GetParkingLotUsagesInPercentAction(request, response), ActorRef.noSender());
 
-            });
-
-            get("/capacity", (request, response) -> {
-
-            });
-
-            post("/:lotId", (request, response) -> {
-
-            });
-
-
+            response.wait();
+            return response;
         });
 
-        post("/", (request, response) -> master.tell(, ActorRef.noSender()));
-        put("/", (request, response) -> master.tell(, ActorRef.noSender()));
+        get("/parkingLot/:lotId/visitors", (request, response) -> {
+            master.tell(new GetParkingLotVisitorsInDayAction(request, response), ActorRef.noSender());
 
-        get("/", (request, response) -> master.tell(, ActorRef.noSender()));
-        get("/", (request, response) -> master.tell(, ActorRef.noSender()));
-        get("/", (request, response) -> master.tell(, ActorRef.noSender()));
-        get("/", (request, response) -> master.tell(, ActorRef.noSender()));
+            response.wait();
+            return response;
+        });
+
+        post("/parkingLot/:lotId/ticket", (request, response) -> {
+            master.tell(new AddTicketAction(request, response), ActorRef.noSender());
+
+            response.wait();
+            return response;
+        });
+
+        delete("/ticket/:ticketId", (request, response) -> {
+            master.tell(new RemoveTicketAction(request, response), ActorRef.noSender());
+
+            response.wait();
+            return response;
+        });
+
     }
 
 }
