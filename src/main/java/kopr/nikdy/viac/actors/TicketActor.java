@@ -4,9 +4,10 @@ import akka.actor.AbstractActor;
 import akka.actor.Props;
 import akka.event.Logging;
 import akka.event.LoggingAdapter;
+import kopr.nikdy.viac.actions.AddTicketAction;
+import kopr.nikdy.viac.actions.RemoveTicketAction;
 import kopr.nikdy.viac.entities.ParkingTicket;
 
-import java.util.Map;
 import java.util.UUID;
 
 public class TicketActor extends AbstractActor {
@@ -16,11 +17,9 @@ public class TicketActor extends AbstractActor {
     @Override
     public Receive createReceive() {
         return receiveBuilder()
-                .match(String.class, sentence -> {
-                    logger.info("Handling '{}'", sentence);
-                    Map<String, Integer> frequencies = calculateFrequencies(sentence);
-                    getSender().tell(frequencies, getSelf());
-                })
+                .match(AddTicketAction.class, action -> )
+                .match(RemoveTicketAction.class, action -> getSender().tell())
+
                 .build();
     }
 

@@ -1,5 +1,7 @@
 package kopr.nikdy.viac.entities;
 
+import com.google.gson.annotations.SerializedName;
+
 import java.time.LocalDateTime;
 import java.util.Objects;
 import java.util.UUID;
@@ -14,21 +16,25 @@ public class ParkingTicket {
     /**
      * Id of car the ticket belongs to
      */
+    @SerializedName("car_licence_plate")
     private String carLicencePlate;
 
     /**
      * Identifier of parking lot the ticket belongs to
      */
+    @SerializedName("parking_lot_id")
     private Integer parkingLotId;
 
     /**
      * Time the ticket was issued
      */
+    @SerializedName("arrival_time")
     private LocalDateTime arrivalTime;
 
     /**
      * Time the car left parking lot
      */
+    @SerializedName("leave_time")
     private LocalDateTime leaveTime;
 
     public UUID getId() {

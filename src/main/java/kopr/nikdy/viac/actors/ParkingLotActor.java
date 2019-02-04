@@ -4,11 +4,12 @@ import akka.actor.AbstractActor;
 import akka.actor.Props;
 import akka.event.Logging;
 import akka.event.LoggingAdapter;
-import kopr.nikdy.viac.example.SentenceCountActor;
+import kopr.nikdy.viac.actions.AddParkingLotAction;
+import kopr.nikdy.viac.actions.GetParkingLotUsagesInPercentAction;
+import kopr.nikdy.viac.actions.GetParkingLotVisitorsInDayAction;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Map;
 
 public class ParkingLotActor extends AbstractActor {
 
@@ -17,16 +18,19 @@ public class ParkingLotActor extends AbstractActor {
     @Override
     public Receive createReceive() {
         return receiveBuilder()
-                .match(String.class, sentence -> {
-                    logger.info("Handling '{}'", sentence);
-                    Map<String, Integer> frequencies = calculateFrequencies(sentence);
-                    getSender().tell(frequencies, getSelf());
-                })
+                .match(AddParkingLotAction.class, this::handleAddParkingLotAction)
+                .match(GetParkingLotVisitorsInDayAction.class, this::handleGetParkingLotVisitorsInDayAction)
+                .match(GetParkingLotUsagesInPercentAction.class, this::handleGetParkingLotVisitorsDuringDayAction)
+
                 .build();
     }
 
-    public static Props props() {
-        return Props.create(SentenceCountActor.class);
+    private <P> void handleAddParkingLotAction(P p) {
+
+    }
+
+    private void handleGetParkingLotVisitorsInDayAction(GetParkingLotVisitorsInDayAction action) {
+        action.markCompleted();
     }
 
     /**
@@ -34,8 +38,12 @@ public class ParkingLotActor extends AbstractActor {
      * @param ids
      * @return
      */
-    private List<Double> parkingLotsUsagesInPercent(List<Integer> ids) {
+    private List<Double> getParkingLotsUsagesInPercent(List<Integer> ids) {
         return null;
+    }
+
+    private void handleGetParkingLotVisitorsDuringDayAction(GetParkingLotUsagesInPercentAction action) {
+        action.markCompleted();
     }
 
     /**
@@ -44,8 +52,13 @@ public class ParkingLotActor extends AbstractActor {
      * @param day
      * @return
      */
-    private int parkingLotVisitorsDuringDay(Integer id, LocalDate day) {
+    private int getParkingLotVisitorsDuringDay(Integer id, LocalDate day) {
         return 0;
+    }
+
+
+    public static Props props() {
+        return Props.create(ParkingLotActor.class);
     }
 
 }
