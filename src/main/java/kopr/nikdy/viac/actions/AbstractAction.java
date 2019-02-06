@@ -1,5 +1,6 @@
 package kopr.nikdy.viac.actions;
 
+import com.google.gson.Gson;
 import spark.Request;
 import spark.Response;
 
@@ -20,7 +21,19 @@ public abstract class AbstractAction {
      * This function releases the wait() allowing response to be sent.
      */
     public void markCompleted() {
+        System.out.println("Completed");
         this.response.notify();
+    }
+
+    /**
+     * Set response body to be sent back to the client.
+     * Every response is serialized as JSON.
+     *
+     * @param content Content to add into response body
+     */
+    public void setResponseBody(Object content) {
+        String responseBody = new Gson().toJson(content);
+        this.response.body(responseBody);
     }
 
     public Request getRequest() {

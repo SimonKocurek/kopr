@@ -30,7 +30,7 @@ public class Server {
          * Get in percent how used are parking lots
          *
          * request query params: ?id=<firstLot>&id=<secondLot>&id=...
-         * response body: {"firstLot": "98%", "secondLot": "23%", ...}
+         * response body: {"firstLot": "98", "secondLot": "23", ...}
          */
         get("/parkingLot/usage", (request, response) -> {
             master.tell(new GetParkingLotUsagesInPercentAction(request, response), ActorRef.noSender());

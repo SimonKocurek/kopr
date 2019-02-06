@@ -30,6 +30,7 @@ public class MasterActor extends AbstractActor {
                 .match(GetParkingLotUsagesInPercentAction.class, action -> parkingLotActor.tell(action, getSelf()))
                 .match(GetParkingLotVisitorsInDayAction.class, action -> parkingLotActor.tell(action, getSelf()))
 
+                .match(AbstractAction.class, AbstractAction::markCompleted)
                 .build();
     }
 

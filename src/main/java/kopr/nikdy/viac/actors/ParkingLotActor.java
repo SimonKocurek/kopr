@@ -2,60 +2,52 @@ package kopr.nikdy.viac.actors;
 
 import akka.actor.AbstractActor;
 import akka.actor.Props;
-import akka.event.Logging;
-import akka.event.LoggingAdapter;
 import kopr.nikdy.viac.actions.AddParkingLotAction;
 import kopr.nikdy.viac.actions.GetParkingLotUsagesInPercentAction;
 import kopr.nikdy.viac.actions.GetParkingLotVisitorsInDayAction;
+import kopr.nikdy.viac.persistance.Database;
 
-import java.time.LocalDate;
-import java.util.List;
+import java.sql.SQLException;
+import java.util.Map;
 
 public class ParkingLotActor extends AbstractActor {
-
-    private LoggingAdapter logger = Logging.getLogger(getContext().system(), this);
 
     @Override
     public Receive createReceive() {
         return receiveBuilder()
                 .match(AddParkingLotAction.class, this::handleAddParkingLotAction)
                 .match(GetParkingLotVisitorsInDayAction.class, this::handleGetParkingLotVisitorsInDayAction)
-                .match(GetParkingLotUsagesInPercentAction.class, this::handleGetParkingLotVisitorsDuringDayAction)
+                .match(GetParkingLotUsagesInPercentAction.class, this::handleGetParkingLotUsagesInPercentAction)
 
                 .build();
     }
 
-    private <P> void handleAddParkingLotAction(P p) {
-
+    private void handleAddParkingLotAction(AddParkingLotAction action) {
+        try {
+            Database.addParkingLot(action.getParkingLot());
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
     private void handleGetParkingLotVisitorsInDayAction(GetParkingLotVisitorsInDayAction action) {
-        action.markCompleted();
+        try {
+
+            int parkingLotVisitorsDuringDay = Database.getParkingLotVisitorsDuringDay(action.getParkingLotId(), action.getDay());
+            action.setResponseBody(parkingLotVisitorsDuringDay);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
-    /**
-     *
-     * @param ids
-     * @return
-     */
-    private List<Double> getParkingLotsUsagesInPercent(List<Integer> ids) {
-        return null;
+    private void handleGetParkingLotUsagesInPercentAction(GetParkingLotUsagesInPercentAction action) {
+        try {
+            Map<Integer, Double> usagesInPercent = Database.getUsagesInPercent(action.getIds());
+            action.setResponseBody(usagesInPercent);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
-
-    private void handleGetParkingLotVisitorsDuringDayAction(GetParkingLotUsagesInPercentAction action) {
-        action.markCompleted();
-    }
-
-    /**
-     *
-     * @param id
-     * @param day
-     * @return
-     */
-    private int getParkingLotVisitorsDuringDay(Integer id, LocalDate day) {
-        return 0;
-    }
-
 
     public static Props props() {
         return Props.create(ParkingLotActor.class);

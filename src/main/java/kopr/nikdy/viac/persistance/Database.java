@@ -78,7 +78,7 @@ public class Database {
      *
      * @param parkingLot Parking lot to save to a database
      */
-    private static void addParkingLot(ParkingLot parkingLot) throws SQLException {
+    public static void addParkingLot(ParkingLot parkingLot) throws SQLException {
         checkDatabaseInitialized();
 
         try (
@@ -100,7 +100,7 @@ public class Database {
      *
      * @param ticket Ticket to save to a database
      */
-    private static void addTicket(ParkingTicket ticket) throws SQLException {
+    public static void addTicket(ParkingTicket ticket) throws SQLException {
         checkDatabaseInitialized();
 
         try (
@@ -124,7 +124,7 @@ public class Database {
      *
      * @param id Id of ticket that is removed. Removing means car with the ticket left parking lot and leave time is set
      */
-    private static void removeTicket(UUID id) throws SQLException {
+    public static void removeTicket(UUID id) throws SQLException {
         checkDatabaseInitialized();
 
         try (
@@ -142,12 +142,51 @@ public class Database {
     }
 
     /**
+     * Get number of parking lot slots subtracted by number of tickets that weren't removed yet.
+     *
+     * @param id Id of parking lot to get remaining capacity
+     * @return Number of free slots on the parking lot
+     */
+    public static int getParkingLotRemainingCapacity(Integer id) throws SQLException {
+        checkDatabaseInitialized();
+
+        try (
+                PreparedStatement statement = connection.prepareStatement(
+                        "SELECT lot.capacity - COUNT(ticket.id) AS remaining " +
+                                "FROM parking_lot AS lot " +
+                                "LEFT JOIN parking_ticket AS ticket ON lot.id = ticket.parking_lot " +
+                                "WHERE lot.id = ? AND ticket.leave_time IS NULL;"
+                )
+        ) {
+            statement.setInt(1, id);
+            return extractRemainingParkingLotCapacity(statement);
+        }
+    }
+
+
+    /**
+     * Execute statement and extract the result
+     *
+     * @param statement getParkingLotRemainingCapacity statement
+     * @return Number of remaining slots, -1 if parking lot with such id doesn't exist
+     */
+    private static int extractRemainingParkingLotCapacity(PreparedStatement statement) throws SQLException {
+        try (ResultSet resultSet = statement.executeQuery()) {
+            if (resultSet.next()) {
+                return resultSet.getInt("remaining");
+            }
+        }
+
+        return -1;
+    }
+
+    /**
      * Gets usage of selected Parking lots in percent. 100% being fully used, and 0% not used at all.
      *
      * @param ids IDs of parking lots to get usages of
      * @return Map of Parking lot Id -> usage
      */
-    private static Map<Integer, Double> getUsagesInPercent(List<Integer> ids) throws SQLException {
+    public static Map<Integer, Double> getUsagesInPercent(List<Integer> ids) throws SQLException {
         checkDatabaseInitialized();
 
         try (PreparedStatement statement = connection.prepareStatement(buildUsagesInPercentQuery(ids))) {
@@ -205,7 +244,7 @@ public class Database {
      * @param date Day we want to count visitors at
      * @return Number of tickets that started and ended on the the day
      */
-    private static int getParkingLotVisitorsDuringDay(Integer id, LocalDate date) throws SQLException {
+    public static int getParkingLotVisitorsDuringDay(Integer id, LocalDate date) throws SQLException {
         checkDatabaseInitialized();
 
         try (

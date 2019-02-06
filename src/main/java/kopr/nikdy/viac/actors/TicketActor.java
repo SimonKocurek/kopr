@@ -2,43 +2,37 @@ package kopr.nikdy.viac.actors;
 
 import akka.actor.AbstractActor;
 import akka.actor.Props;
-import akka.event.Logging;
-import akka.event.LoggingAdapter;
 import kopr.nikdy.viac.actions.AddTicketAction;
 import kopr.nikdy.viac.actions.RemoveTicketAction;
-import kopr.nikdy.viac.entities.ParkingTicket;
+import kopr.nikdy.viac.persistance.Database;
 
-import java.util.UUID;
+import java.sql.SQLException;
 
 public class TicketActor extends AbstractActor {
-
-    private final LoggingAdapter logger = Logging.getLogger(getContext().system(), this);
 
     @Override
     public Receive createReceive() {
         return receiveBuilder()
-                .match(AddTicketAction.class, action -> )
-                .match(RemoveTicketAction.class, action -> getSender().tell())
+                .match(AddTicketAction.class, this::handleAddTicketAction)
+                .match(RemoveTicketAction.class, this::handleRemoveTicketAction)
 
                 .build();
     }
 
-    /**
-     * Create a new ticket for a car that just arrived
-     *
-     * @param ticket
-     * @return
-     */
-    private UUID addTicket(ParkingTicket ticket) {
-        return null;
+    private void handleAddTicketAction(AddTicketAction action) {
+        try {
+            Database.addTicket(action.getTicket());
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
-    /**
-     *
-     * @param id
-     */
-    private void removeTicket(UUID id) {
-
+    private void handleRemoveTicketAction(RemoveTicketAction action) {
+        try {
+            Database.removeTicket(action.getTicketId());
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
     public static Props props() {
