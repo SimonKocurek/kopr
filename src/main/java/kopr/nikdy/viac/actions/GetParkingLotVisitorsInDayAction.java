@@ -5,6 +5,7 @@ import spark.Response;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.concurrent.CountDownLatch;
 
 public class GetParkingLotVisitorsInDayAction extends AbstractAction {
 
@@ -12,8 +13,8 @@ public class GetParkingLotVisitorsInDayAction extends AbstractAction {
 
     private LocalDate day;
 
-    public GetParkingLotVisitorsInDayAction(Request request, Response response) {
-        super(request, response);
+    public GetParkingLotVisitorsInDayAction(Request request, Response response, CountDownLatch pendingTasks) {
+        super(request, response, pendingTasks);
         parkingLotId = extractRequestParkingLotId();
         day = extractRequestDay();
     }

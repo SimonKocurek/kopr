@@ -48,13 +48,13 @@ public class Database {
                 "CREATE TABLE IF NOT EXISTS parking_ticket(" +
                         "id BLOB PRIMARY KEY," +
                         "car_licence_plate VARCHAR(16) NOT NULL," +
-                        "parking_lot INTEGER FOREIGN KEY REFERENCES parking_lot(id) NOT NULL," +
+                        "parking_lot INTEGER REFERENCES parking_lot(id) NOT NULL," +
                         "arrival_time DATETIME DEFAULT CURRENT_TIMESTAMP," +
                         "leave_time DATETIME" +
                         ");"
         );
         statement.executeUpdate(
-                "CREATE INDEX time_index ON parking_ticket(arrival_time, leave_time);"
+                "CREATE INDEX IF NOT EXISTS time_index ON parking_ticket(arrival_time, leave_time);"
         );
     }
 
@@ -83,11 +83,12 @@ public class Database {
 
         try (
                 PreparedStatement statement = connection.prepareStatement(
-                        "INSERT INTO parking_lot(capacity) VALUES (?);",
+                        "INSERT INTO parking_lot(name, capacity) VALUES (?, ?);",
                         Statement.RETURN_GENERATED_KEYS
                 )
         ) {
-            statement.setInt(1, parkingLot.getCapacity());
+            statement.setString(1, parkingLot.getName());
+            statement.setInt(2, parkingLot.getCapacity());
             checkSomeRowsAffected(statement.executeUpdate());
 
             int generatedId = getGeneratedId(statement);

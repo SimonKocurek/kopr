@@ -4,13 +4,14 @@ import spark.Request;
 import spark.Response;
 
 import java.util.UUID;
+import java.util.concurrent.CountDownLatch;
 
 public class RemoveTicketAction extends AbstractAction {
 
     private UUID ticketId;
 
-    public RemoveTicketAction(Request request, Response response) {
-        super(request, response);
+    public RemoveTicketAction(Request request, Response response, CountDownLatch pendingTasks) {
+        super(request, response, pendingTasks);
         ticketId = extractRequestData();
     }
 

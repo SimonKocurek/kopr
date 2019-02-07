@@ -5,12 +5,14 @@ import kopr.nikdy.viac.entities.ParkingLot;
 import spark.Request;
 import spark.Response;
 
+import java.util.concurrent.CountDownLatch;
+
 public class AddParkingLotAction extends AbstractAction {
 
     private ParkingLot parkingLot;
 
-    public AddParkingLotAction(Request request, Response response) {
-        super(request, response);
+    public AddParkingLotAction(Request request, Response response, CountDownLatch pendingTasks) {
+        super(request, response, pendingTasks);
         parkingLot = getRequestContent();
     }
 

@@ -20,10 +20,9 @@ public class Main {
             // if the error message is "out of memory",
             // it probably means no database file is found
             System.err.println(e.getMessage());
-
-        } finally {
-            Database.close();
         }
+
+        Runtime.getRuntime().addShutdownHook(new Thread(Database::close));
     }
 
 }

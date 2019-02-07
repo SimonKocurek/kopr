@@ -5,6 +5,8 @@ import akka.actor.ActorSystem;
 import kopr.nikdy.viac.actions.*;
 import kopr.nikdy.viac.actors.MasterActor;
 
+import java.util.concurrent.CountDownLatch;
+
 import static spark.Spark.*;
 
 public class Server {
@@ -20,9 +22,10 @@ public class Server {
          * response body: {"id": int, "name": str, "capacity": int}
          */
         post("/parkingLot", (request, response) -> {
-            master.tell(new AddParkingLotAction(request, response), ActorRef.noSender());
+            CountDownLatch pendingTasks = new CountDownLatch(1);
+            master.tell(new AddParkingLotAction(request, response, pendingTasks), ActorRef.noSender());
 
-            response.wait();
+            pendingTasks.await();
             return response;
         });
 
@@ -33,9 +36,10 @@ public class Server {
          * response body: {"firstLot": "98", "secondLot": "23", ...}
          */
         get("/parkingLot/usage", (request, response) -> {
-            master.tell(new GetParkingLotUsagesInPercentAction(request, response), ActorRef.noSender());
+            CountDownLatch pendingTasks = new CountDownLatch(1);
+            master.tell(new GetParkingLotUsagesInPercentAction(request, response, pendingTasks), ActorRef.noSender());
 
-            response.wait();
+            pendingTasks.await();
             return response;
         });
 
@@ -47,9 +51,10 @@ public class Server {
          * response body: 32
          */
         get("/parkingLot/:lotId/visitors", (request, response) -> {
-            master.tell(new GetParkingLotVisitorsInDayAction(request, response), ActorRef.noSender());
+            CountDownLatch pendingTasks = new CountDownLatch(1);
+            master.tell(new GetParkingLotVisitorsInDayAction(request, response, pendingTasks), ActorRef.noSender());
 
-            response.wait();
+            pendingTasks.await();
             return response;
         });
 
@@ -66,9 +71,10 @@ public class Server {
          * }
          */
         post("/ticket", (request, response) -> {
-            master.tell(new AddTicketAction(request, response), ActorRef.noSender());
+            CountDownLatch pendingTasks = new CountDownLatch(1);
+            master.tell(new AddTicketAction(request, response, pendingTasks), ActorRef.noSender());
 
-            response.wait();
+            pendingTasks.await();
             return response;
         });
 
@@ -85,9 +91,10 @@ public class Server {
          * }
          */
         delete("/ticket/:ticketId", (request, response) -> {
-            master.tell(new RemoveTicketAction(request, response), ActorRef.noSender());
+            CountDownLatch pendingTasks = new CountDownLatch(1);
+            master.tell(new RemoveTicketAction(request, response, pendingTasks), ActorRef.noSender());
 
-            response.wait();
+            pendingTasks.await();
             return response;
         });
 

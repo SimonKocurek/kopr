@@ -7,13 +7,14 @@ import spark.Response;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
+import java.util.concurrent.CountDownLatch;
 
 public class AddTicketAction extends AbstractAction {
 
     private ParkingTicket ticket;
 
-    public AddTicketAction(Request request, Response response) {
-        super(request, response);
+    public AddTicketAction(Request request, Response response, CountDownLatch pendingTasks) {
+        super(request, response, pendingTasks);
         ticket = extractRequestData();
     }
 

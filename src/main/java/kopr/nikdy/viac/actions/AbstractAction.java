@@ -5,15 +5,23 @@ import spark.Request;
 import spark.Response;
 
 import java.util.Objects;
+import java.util.concurrent.CountDownLatch;
 
 public abstract class AbstractAction {
 
     private final Request request;
     private final Response response;
 
-    protected AbstractAction(Request request, Response response) {
+    /**
+     * Latch waiting for all tasks to be processed before sending response to the client.
+     * Usually is set to 1 task.
+     */
+    private final CountDownLatch pendingTasks;
+
+    protected AbstractAction(Request request, Response response, CountDownLatch pendingTasks) {
         this.request = request;
         this.response = response;
+        this.pendingTasks = pendingTasks;
     }
 
     /**
@@ -21,8 +29,7 @@ public abstract class AbstractAction {
      * This function releases the wait() allowing response to be sent.
      */
     public void markCompleted() {
-        System.out.println("Completed");
-        this.response.notify();
+        this.pendingTasks.countDown();
     }
 
     /**
@@ -44,18 +51,23 @@ public abstract class AbstractAction {
         return response;
     }
 
+    public CountDownLatch getPendingTasks() {
+        return pendingTasks;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         AbstractAction that = (AbstractAction) o;
         return Objects.equals(request, that.request) &&
-                Objects.equals(response, that.response);
+                Objects.equals(response, that.response) &&
+                Objects.equals(pendingTasks, that.pendingTasks);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(request, response);
+        return Objects.hash(request, response, pendingTasks);
     }
 
     @Override
@@ -63,6 +75,7 @@ public abstract class AbstractAction {
         return "AbstractAction{" +
                 "request=" + request +
                 ", response=" + response +
+                ", pendingTasks=" + pendingTasks +
                 '}';
     }
 
