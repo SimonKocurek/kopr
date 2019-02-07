@@ -43,7 +43,7 @@ public abstract class Action {
      * @param status    Error status of the response
      */
     public void setErrorResponse(String message, HttpStatus.Code status) {
-        response.body(message + "\n" + toString());
+        response.body(message);
         response.status(status.getCode());
     }
 

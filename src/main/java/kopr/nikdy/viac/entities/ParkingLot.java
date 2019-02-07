@@ -12,7 +12,7 @@ public class ParkingLot {
     /**
      * Amount of spaces for cars in the parking lot
      */
-    private int capacity;
+    private Integer capacity;
 
     /**
      * Human readable identifier of parking lot (eg. GPS, street name)
@@ -27,11 +27,11 @@ public class ParkingLot {
         this.id = id;
     }
 
-    public int getCapacity() {
+    public Integer getCapacity() {
         return capacity;
     }
 
-    public void setCapacity(int capacity) {
+    public void setCapacity(Integer capacity) {
         this.capacity = capacity;
     }
 
@@ -48,7 +48,7 @@ public class ParkingLot {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         ParkingLot that = (ParkingLot) o;
-        return capacity == that.capacity &&
+        return capacity.equals(that.capacity) &&
                 Objects.equals(id, that.id) &&
                 Objects.equals(name, that.name);
     }

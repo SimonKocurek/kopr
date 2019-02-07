@@ -29,7 +29,7 @@ public class ParkingLotActor extends AbstractActor {
             Database.addParkingLot(action.getParkingLot());
             action.setResponseBody(action.getParkingLot());
 
-        } catch (SQLException e) {
+        } catch (Exception e) {
             action.setErrorResponse("Failed creating parking lot", e, HttpStatus.Code.BAD_REQUEST);
         }
 

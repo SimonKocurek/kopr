@@ -13,16 +13,40 @@ public class AddParkingLotAction extends Action {
 
     public AddParkingLotAction(Request request, Response response, CountDownLatch pendingTasks) {
         super(request, response, pendingTasks);
-        parkingLot = getRequestContent();
     }
 
-    private ParkingLot getRequestContent() {
-        String parkingLotJson = getRequest().body();
-        return new Gson().fromJson(parkingLotJson, ParkingLot.class);
-    }
+    public ParkingLot getParkingLot() throws InvalidRequestParametersException {
+        if (parkingLot == null) {
+            extractParkingLotParameter();
+        }
 
-    public ParkingLot getParkingLot() {
         return parkingLot;
+    }
+
+    private void extractParkingLotParameter() throws InvalidRequestParametersException {
+        try {
+            String parkingLotJson = getRequest().body();
+            parkingLot = new Gson().fromJson(parkingLotJson, ParkingLot.class);
+
+        } catch (Exception e) {
+            throw new InvalidRequestParametersException("{\"name\": str, \"capacity\": int}");
+        }
+
+        validateParameters();
+    }
+
+    private void validateParameters() throws InvalidRequestParametersException {
+        if (parkingLot.getName() == null) {
+            throw new InvalidRequestParametersException("{\"name\": str, ...}");
+        }
+
+        if (parkingLot.getCapacity() == null) {
+            throw new InvalidRequestParametersException("{\"capacity\": int, ...}");
+        }
+
+        if (parkingLot.getCapacity() < 0) {
+            throw new InvalidRequestParametersException("{\"capacity\": int > 0, ...}");
+        }
     }
 
 }
