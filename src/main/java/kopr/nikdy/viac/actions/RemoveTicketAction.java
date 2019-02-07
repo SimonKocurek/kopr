@@ -17,7 +17,7 @@ public class RemoveTicketAction extends AbstractAction {
 
     private UUID extractRequestData() {
         String uuid = getRequest().params(":ticketId");
-        return UUID.fromString(uuid);
+        return UUID.fromString(uuid.toLowerCase());
     }
 
     public UUID getTicketId() {

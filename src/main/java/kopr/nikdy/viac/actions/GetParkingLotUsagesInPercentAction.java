@@ -18,7 +18,13 @@ public class GetParkingLotUsagesInPercentAction extends AbstractAction {
     }
 
     private List<Integer> getRequestContent() {
-        return Arrays.stream(getRequest().queryParamsValues("id"))
+        String[] parkingLotIds = getRequest().queryParamsValues("id");
+
+        if (parkingLotIds == null) {
+            parkingLotIds = new String[0];
+        }
+
+        return Arrays.stream(parkingLotIds)
                 .map(Integer::valueOf)
                 .collect(Collectors.toList());
     }

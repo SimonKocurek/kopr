@@ -26,7 +26,7 @@ public class GetParkingLotVisitorsInDayAction extends AbstractAction {
 
     private LocalDate extractRequestDay() {
         String day = getRequest().queryParams("day");
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-M-d");
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         return LocalDate.parse(day, formatter);
     }
 

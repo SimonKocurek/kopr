@@ -1,7 +1,5 @@
 package kopr.nikdy.viac.persistance;
 
-import javax.sql.rowset.serial.SerialBlob;
-import java.sql.Blob;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
@@ -11,7 +9,7 @@ public class Convert {
 
     public static final int BITS_IN_BYTE = 8;
 
-    public static Blob toBlob(UUID uuid) throws SQLException {
+    public static byte[] toBytes(UUID uuid) throws SQLException {
         byte[] uuidBytes = new byte[16];
 
         long leastSignificantBits = uuid.getLeastSignificantBits();
@@ -26,12 +24,10 @@ public class Convert {
             mostSignificantBits >>= BITS_IN_BYTE;
         }
 
-        return new SerialBlob(uuidBytes);
+        return uuidBytes;
     }
 
-    public static UUID toUuid(Blob blob) throws SQLException {
-        byte[] bytes = blob.getBytes(0, Long.BYTES * 2);
-
+    public static UUID fromBytes(byte[] bytes) {
         long mostSignificantBits = 0;
         for (int i = 2 * Long.BYTES - 1; i >= Long.BYTES; i--) {
             mostSignificantBits <<= BITS_IN_BYTE;

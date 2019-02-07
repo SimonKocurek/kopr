@@ -32,12 +32,12 @@ public class ParkingLotActor extends AbstractActor {
             Database.addParkingLot(action.getParkingLot());
             action.setResponseBody(action.getParkingLot());
 
-            getSender().tell(new ActionDone(action), getSelf());
-
         } catch (SQLException e) {
             logger.error("Failed creating parking lot, " + action);
             e.printStackTrace();
         }
+
+        getSender().tell(new ActionDone(action), getSelf());
     }
 
     private void handleGetParkingLotVisitorsInDayAction(GetParkingLotVisitorsInDayAction action) {
@@ -45,12 +45,12 @@ public class ParkingLotActor extends AbstractActor {
             int parkingLotVisitorsDuringDay = Database.getParkingLotVisitorsDuringDay(action.getParkingLotId(), action.getDay());
             action.setResponseBody(parkingLotVisitorsDuringDay);
 
-            getSender().tell(new ActionDone(action), getSelf());
-
         } catch (SQLException e) {
             logger.error("Failed getting parking lot visitors in day, " + action);
             e.printStackTrace();
         }
+
+        getSender().tell(new ActionDone(action), getSelf());
     }
 
     private void handleGetParkingLotUsagesInPercentAction(GetParkingLotUsagesInPercentAction action) {
@@ -58,12 +58,12 @@ public class ParkingLotActor extends AbstractActor {
             Map<Integer, Double> usagesInPercent = Database.getUsagesInPercent(action.getIds());
             action.setResponseBody(usagesInPercent);
 
-            getSender().tell(new ActionDone(action), getSelf());
-
         } catch (SQLException e) {
             logger.error("Failed getting parking lot usages, " + action);
             e.printStackTrace();
         }
+
+        getSender().tell(new ActionDone(action), getSelf());
     }
 
     public static Props props() {

@@ -17,7 +17,7 @@ public class MasterActor extends AbstractActor {
     );
 
     private final ActorRef ticketActor = getContext().actorOf(
-            ParkingLotActor.props().withRouter(new RoundRobinPool(10))
+            TicketActor.props().withRouter(new RoundRobinPool(10))
     );
 
     @Override

@@ -9,6 +9,7 @@ import kopr.nikdy.viac.actions.AddTicketAction;
 import kopr.nikdy.viac.actions.RemoveTicketAction;
 import kopr.nikdy.viac.persistance.Database;
 
+import java.io.IOException;
 import java.sql.SQLException;
 
 public class TicketActor extends AbstractActor {
@@ -29,18 +30,20 @@ public class TicketActor extends AbstractActor {
             int remainingCapacity = Database.getParkingLotRemainingCapacity(action.getTicket().getParkingLotId());
             if (remainingCapacity <= 0) {
                 action.setResponseBody("No space");
-                getSender().tell(new ActionDone(action), getSelf());
+            } else {
+                Database.addTicket(action.getTicket());
+                action.setResponseBody(action.getTicket());
             }
-
-            Database.addTicket(action.getTicket());
-            action.setResponseBody(action.getTicket());
-
-            getSender().tell(new ActionDone(action), getSelf());
 
         } catch (SQLException e) {
             logger.error("Failed adding ticket, " + e);
             e.printStackTrace();
+
+        } catch (IOException e) {
+            e.printStackTrace();
         }
+
+        getSender().tell(new ActionDone(action), getSelf());
     }
 
     private void handleRemoveTicketAction(RemoveTicketAction action) {
@@ -48,12 +51,15 @@ public class TicketActor extends AbstractActor {
             Database.removeTicket(action.getTicketId());
             action.setResponseBody(action.getTicketId());
 
-            getSender().tell(new ActionDone(action), getSelf());
-
         } catch (SQLException e) {
             logger.error("Failed removing ticket, " + e);
             e.printStackTrace();
+
+        } catch (IOException e) {
+            e.printStackTrace();
         }
+
+        getSender().tell(new ActionDone(action), getSelf());
     }
 
     public static Props props() {

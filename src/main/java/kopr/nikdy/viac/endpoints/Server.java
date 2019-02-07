@@ -26,7 +26,7 @@ public class Server {
             master.tell(new AddParkingLotAction(request, response, pendingTasks), ActorRef.noSender());
 
             pendingTasks.await();
-            return response;
+            return response.body();
         });
 
         /**
@@ -40,14 +40,14 @@ public class Server {
             master.tell(new GetParkingLotUsagesInPercentAction(request, response, pendingTasks), ActorRef.noSender());
 
             pendingTasks.await();
-            return response;
+            return response.body();
         });
 
         /**
          * Get number of visitors during a specified day on a parking lot.
          * This counts every ticket that was added and later removed during the day.
          *
-         * request query params: ?day=<day> *2001-2-20
+         * request query params: ?day=<day> *2001-02-20
          * response body: 32
          */
         get("/parkingLot/:lotId/visitors", (request, response) -> {
@@ -55,7 +55,7 @@ public class Server {
             master.tell(new GetParkingLotVisitorsInDayAction(request, response, pendingTasks), ActorRef.noSender());
 
             pendingTasks.await();
-            return response;
+            return response.body();
         });
 
         /**
@@ -75,7 +75,7 @@ public class Server {
             master.tell(new AddTicketAction(request, response, pendingTasks), ActorRef.noSender());
 
             pendingTasks.await();
-            return response;
+            return response.body();
         });
 
         /**
@@ -95,7 +95,7 @@ public class Server {
             master.tell(new RemoveTicketAction(request, response, pendingTasks), ActorRef.noSender());
 
             pendingTasks.await();
-            return response;
+            return response.body();
         });
 
     }

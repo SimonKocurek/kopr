@@ -3,6 +3,7 @@ package kopr.nikdy.viac.persistance;
 import kopr.nikdy.viac.entities.ParkingLot;
 import kopr.nikdy.viac.entities.ParkingTicket;
 
+import java.io.IOException;
 import java.sql.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -10,6 +11,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 public class Database {
 
@@ -41,12 +43,12 @@ public class Database {
                 "CREATE TABLE IF NOT EXISTS parking_lot(" +
                         "id INTEGER PRIMARY KEY AUTOINCREMENT," +
                         "capacity INTEGER NOT NULL CHECK ( capacity >= 0 )," +
-                        "name VARCHAR(256) NOT NULL" +
+                        "name VARCHAR(256) UNIQUE NOT NULL" +
                         ");"
         );
         statement.executeUpdate(
                 "CREATE TABLE IF NOT EXISTS parking_ticket(" +
-                        "id BLOB PRIMARY KEY," +
+                        "id BLOB(16) PRIMARY KEY," +
                         "car_licence_plate VARCHAR(16) NOT NULL," +
                         "parking_lot INTEGER REFERENCES parking_lot(id) NOT NULL," +
                         "arrival_time DATETIME DEFAULT CURRENT_TIMESTAMP," +
@@ -101,7 +103,7 @@ public class Database {
      *
      * @param ticket Ticket to save to a database
      */
-    public static void addTicket(ParkingTicket ticket) throws SQLException {
+    public static void addTicket(ParkingTicket ticket) throws SQLException, IOException {
         checkDatabaseInitialized();
 
         try (
@@ -111,7 +113,7 @@ public class Database {
                         Statement.RETURN_GENERATED_KEYS
                 )
         ) {
-            statement.setBlob(1, Convert.toBlob(ticket.getId()));
+            statement.setBytes(1, Convert.toBytes(ticket.getId()));
             statement.setString(2, ticket.getCarLicencePlate());
             statement.setInt(3, ticket.getParkingLotId());
             statement.setTimestamp(4, Convert.toTimestamp(ticket.getArrivalTime()));
@@ -125,7 +127,7 @@ public class Database {
      *
      * @param id Id of ticket that is removed. Removing means car with the ticket left parking lot and leave time is set
      */
-    public static void removeTicket(UUID id) throws SQLException {
+    public static void removeTicket(UUID id) throws SQLException, IOException {
         checkDatabaseInitialized();
 
         try (
@@ -136,7 +138,7 @@ public class Database {
                 )
         ) {
             statement.setTimestamp(1, Convert.toTimestamp(LocalDateTime.now()));
-            statement.setBlob(2, Convert.toBlob(id));
+            statement.setBytes(2, Convert.toBytes(id));
 
             checkSomeRowsAffected(statement.executeUpdate());
         }
@@ -203,21 +205,14 @@ public class Database {
      * Build a statement, for querying parking lot usage with parameterized parking lot IDs
      */
     private static String buildUsagesInPercentQuery(List<Integer> ids) {
-        StringBuilder query = new StringBuilder()
-                .append("SELECT " +
-                        "lot.id AS id, " +
-                        "COUNT(ticket.id) / CAST(lot.capacity AS REAL) * 100 AS percentage ")
-                .append("FROM parking_lot AS lot ")
-                .append("LEFT JOIN parking_ticket AS ticket ON ticket.parking_lot = lot.id ")
-                .append("WHERE ticket.leave_time IS NULL ")
-                .append("GROUP BY lot.id, lot.capacity ")
-                .append("HAVING lot.id IN (");
-
-        for (Integer id : ids) {
-            query.append("?,");
-        }
-
-        return query.append(");").toString();
+        return "SELECT lot.id AS id, COUNT(ticket.id) / CAST(lot.capacity AS REAL) * 100 AS percentage " +
+                "FROM parking_lot AS lot " +
+                "LEFT JOIN parking_ticket AS ticket ON ticket.parking_lot = lot.id " +
+                "WHERE ticket.leave_time IS NULL " +
+                "GROUP BY lot.id, lot.capacity " +
+                "HAVING lot.id IN (" +
+                ids.stream().map(value -> "?").collect(Collectors.joining(",")) +
+                ");";
     }
 
     /**
