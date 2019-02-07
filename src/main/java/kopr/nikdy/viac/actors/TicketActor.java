@@ -8,9 +8,7 @@ import kopr.nikdy.viac.actions.ActionDone;
 import kopr.nikdy.viac.actions.AddTicketAction;
 import kopr.nikdy.viac.actions.RemoveTicketAction;
 import kopr.nikdy.viac.persistance.Database;
-
-import java.io.IOException;
-import java.sql.SQLException;
+import org.eclipse.jetty.http.HttpStatus;
 
 public class TicketActor extends AbstractActor {
 
@@ -29,18 +27,15 @@ public class TicketActor extends AbstractActor {
         try {
             int remainingCapacity = Database.getParkingLotRemainingCapacity(action.getTicket().getParkingLotId());
             if (remainingCapacity <= 0) {
-                action.setResponseBody("No space");
+                action.setErrorResponse("Cannot add ticket to a full parking lot", HttpStatus.Code.BAD_REQUEST);
+
             } else {
                 Database.addTicket(action.getTicket());
                 action.setResponseBody(action.getTicket());
             }
 
-        } catch (SQLException e) {
-            logger.error("Failed adding ticket, " + e);
-            e.printStackTrace();
-
-        } catch (IOException e) {
-            e.printStackTrace();
+        } catch (Exception e) {
+            action.setErrorResponse("Adding ticket", e, HttpStatus.Code.BAD_REQUEST);
         }
 
         getSender().tell(new ActionDone(action), getSelf());
@@ -51,12 +46,8 @@ public class TicketActor extends AbstractActor {
             Database.removeTicket(action.getTicketId());
             action.setResponseBody(action.getTicketId());
 
-        } catch (SQLException e) {
-            logger.error("Failed removing ticket, " + e);
-            e.printStackTrace();
-
-        } catch (IOException e) {
-            e.printStackTrace();
+        } catch (Exception e) {
+            action.setErrorResponse("Failed removing ticket", e, HttpStatus.Code.BAD_REQUEST);
         }
 
         getSender().tell(new ActionDone(action), getSelf());

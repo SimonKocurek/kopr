@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 import java.util.concurrent.CountDownLatch;
 
-public class AddTicketAction extends AbstractAction {
+public class AddTicketAction extends Action {
 
     private ParkingTicket ticket;
 

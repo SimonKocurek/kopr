@@ -134,7 +134,8 @@ public class Database {
                 PreparedStatement statement = connection.prepareStatement(
                         "UPDATE parking_ticket " +
                                 "SET leave_time = ? " +
-                                "WHERE id = ?;"
+                                "WHERE id = ? AND " +
+                                "leave_time IS NULL;"
                 )
         ) {
             statement.setTimestamp(1, Convert.toTimestamp(LocalDateTime.now()));

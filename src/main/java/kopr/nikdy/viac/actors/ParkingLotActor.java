@@ -2,20 +2,17 @@ package kopr.nikdy.viac.actors;
 
 import akka.actor.AbstractActor;
 import akka.actor.Props;
-import akka.event.Logging;
-import akka.event.LoggingAdapter;
 import kopr.nikdy.viac.actions.ActionDone;
 import kopr.nikdy.viac.actions.AddParkingLotAction;
 import kopr.nikdy.viac.actions.GetParkingLotUsagesInPercentAction;
 import kopr.nikdy.viac.actions.GetParkingLotVisitorsInDayAction;
 import kopr.nikdy.viac.persistance.Database;
+import org.eclipse.jetty.http.HttpStatus;
 
 import java.sql.SQLException;
 import java.util.Map;
 
 public class ParkingLotActor extends AbstractActor {
-
-    private LoggingAdapter logger = Logging.getLogger(getContext().system(), this);
 
     @Override
     public Receive createReceive() {
@@ -33,8 +30,7 @@ public class ParkingLotActor extends AbstractActor {
             action.setResponseBody(action.getParkingLot());
 
         } catch (SQLException e) {
-            logger.error("Failed creating parking lot, " + action);
-            e.printStackTrace();
+            action.setErrorResponse("Failed creating parking lot", e, HttpStatus.Code.BAD_REQUEST);
         }
 
         getSender().tell(new ActionDone(action), getSelf());
@@ -46,8 +42,7 @@ public class ParkingLotActor extends AbstractActor {
             action.setResponseBody(parkingLotVisitorsDuringDay);
 
         } catch (SQLException e) {
-            logger.error("Failed getting parking lot visitors in day, " + action);
-            e.printStackTrace();
+            action.setErrorResponse("Failed getting parking lot visitors in a day", e, HttpStatus.Code.BAD_REQUEST);
         }
 
         getSender().tell(new ActionDone(action), getSelf());
@@ -59,8 +54,7 @@ public class ParkingLotActor extends AbstractActor {
             action.setResponseBody(usagesInPercent);
 
         } catch (SQLException e) {
-            logger.error("Failed getting parking lot usages, " + action);
-            e.printStackTrace();
+            action.setErrorResponse("Failed getting parking lot usages", e, HttpStatus.Code.BAD_REQUEST);
         }
 
         getSender().tell(new ActionDone(action), getSelf());

@@ -7,7 +7,7 @@ import spark.Response;
 
 import java.util.concurrent.CountDownLatch;
 
-public class AddParkingLotAction extends AbstractAction {
+public class AddParkingLotAction extends Action {
 
     private ParkingLot parkingLot;
 

@@ -6,7 +6,7 @@ import spark.Response;
 import java.util.UUID;
 import java.util.concurrent.CountDownLatch;
 
-public class RemoveTicketAction extends AbstractAction {
+public class RemoveTicketAction extends Action {
 
     private UUID ticketId;
 

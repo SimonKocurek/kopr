@@ -7,7 +7,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.concurrent.CountDownLatch;
 
-public class GetParkingLotVisitorsInDayAction extends AbstractAction {
+public class GetParkingLotVisitorsInDayAction extends Action {
 
     private Integer parkingLotId;
 

@@ -7,6 +7,6 @@
 POST http://localhost:4567/parkingLot
 Content-Type: application/json
 
-{"name": "petko", "capacity": 100}
+{"name": "Palko", "capacity": 100}
 
 ###

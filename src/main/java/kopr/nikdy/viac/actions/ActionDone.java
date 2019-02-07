@@ -5,9 +5,9 @@ import spark.Response;
 
 import java.util.concurrent.CountDownLatch;
 
-public class ActionDone extends AbstractAction {
+public class ActionDone extends Action {
 
-    public ActionDone(AbstractAction action) {
+    public ActionDone(Action action) {
         this(action.getRequest(), action.getResponse(), action.getPendingTasks());
     }
 

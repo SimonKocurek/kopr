@@ -1,13 +1,14 @@
 package kopr.nikdy.viac.actions;
 
 import com.google.gson.Gson;
+import org.eclipse.jetty.http.HttpStatus;
 import spark.Request;
 import spark.Response;
 
 import java.util.Objects;
 import java.util.concurrent.CountDownLatch;
 
-public abstract class AbstractAction {
+public abstract class Action {
 
     private final Request request;
     private final Response response;
@@ -18,10 +19,32 @@ public abstract class AbstractAction {
      */
     private final CountDownLatch pendingTasks;
 
-    protected AbstractAction(Request request, Response response, CountDownLatch pendingTasks) {
+    protected Action(Request request, Response response, CountDownLatch pendingTasks) {
         this.request = request;
         this.response = response;
         this.pendingTasks = pendingTasks;
+    }
+
+    /**
+     * Marks the request as invalid by setting error status
+     *
+     * @param message   Message to return to the client
+     * @param exception Exception telling what went wrong
+     * @param status    Error status of the response
+     */
+    public void setErrorResponse(String message, Exception exception, HttpStatus.Code status) {
+        setErrorResponse(message + "\n" + exception.getMessage(), status);
+    }
+
+    /**
+     * Marks the request as invalid by setting error status
+     *
+     * @param message   Message to return to the client
+     * @param status    Error status of the response
+     */
+    public void setErrorResponse(String message, HttpStatus.Code status) {
+        response.body(message + "\n" + toString());
+        response.status(status.getCode());
     }
 
     /**
@@ -59,7 +82,7 @@ public abstract class AbstractAction {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        AbstractAction that = (AbstractAction) o;
+        Action that = (Action) o;
         return Objects.equals(request, that.request) &&
                 Objects.equals(response, that.response) &&
                 Objects.equals(pendingTasks, that.pendingTasks);
@@ -72,7 +95,7 @@ public abstract class AbstractAction {
 
     @Override
     public String toString() {
-        return "AbstractAction{" +
+        return "Action{" +
                 "request=" + request +
                 ", response=" + response +
                 ", pendingTasks=" + pendingTasks +

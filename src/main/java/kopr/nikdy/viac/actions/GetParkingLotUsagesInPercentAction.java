@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.stream.Collectors;
 
-public class GetParkingLotUsagesInPercentAction extends AbstractAction {
+public class GetParkingLotUsagesInPercentAction extends Action {
 
     private List<Integer> ids;
 

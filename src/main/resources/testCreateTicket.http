@@ -7,6 +7,6 @@
 POST http://localhost:4567/ticket
 Content-Type: application/json
 
-{"car_licence_plate": "ASDCAS", "parking_lot_id": 2}
+{"car_licence_plate": "BA_LOLZ", "parking_lot_id": 2}
 
 ###
