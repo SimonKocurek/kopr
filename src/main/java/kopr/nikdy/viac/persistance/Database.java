@@ -80,7 +80,7 @@ public class Database {
      *
      * @param parkingLot Parking lot to save to a database
      */
-    public static void addParkingLot(ParkingLot parkingLot) throws SQLException {
+    public synchronized static void addParkingLot(ParkingLot parkingLot) throws SQLException {
         checkDatabaseInitialized();
 
         try (
@@ -103,7 +103,7 @@ public class Database {
      *
      * @param ticket Ticket to save to a database
      */
-    public static void addTicket(ParkingTicket ticket) throws SQLException, IOException {
+    public synchronized static void addTicket(ParkingTicket ticket) throws SQLException, IOException {
         checkDatabaseInitialized();
 
         try (
@@ -127,7 +127,7 @@ public class Database {
      *
      * @param id Id of ticket that is removed. Removing means car with the ticket left parking lot and leave time is set
      */
-    public static void removeTicket(UUID id) throws SQLException, IOException {
+    public synchronized static void removeTicket(UUID id) throws SQLException, IOException {
         checkDatabaseInitialized();
 
         try (
@@ -151,7 +151,7 @@ public class Database {
      * @param id Id of parking lot to get remaining capacity
      * @return Number of free slots on the parking lot
      */
-    public static int getParkingLotRemainingCapacity(Integer id) throws SQLException {
+    public synchronized static int getParkingLotRemainingCapacity(Integer id) throws SQLException {
         checkDatabaseInitialized();
 
         try (
@@ -190,7 +190,7 @@ public class Database {
      * @param ids IDs of parking lots to get usages of
      * @return Map of Parking lot Id -> usage
      */
-    public static Map<Integer, Double> getUsagesInPercent(List<Integer> ids) throws SQLException {
+    public synchronized static Map<Integer, Double> getUsagesInPercent(List<Integer> ids) throws SQLException {
         checkDatabaseInitialized();
 
         try (PreparedStatement statement = connection.prepareStatement(buildUsagesInPercentQuery(ids))) {
@@ -241,7 +241,7 @@ public class Database {
      * @param date Day we want to count visitors at
      * @return Number of tickets that started and ended on the the day
      */
-    public static int getParkingLotVisitorsDuringDay(Integer id, LocalDate date) throws SQLException {
+    public synchronized static int getParkingLotVisitorsDuringDay(Integer id, LocalDate date) throws SQLException {
         checkDatabaseInitialized();
 
         try (
